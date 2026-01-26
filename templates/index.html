@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Control Python Script</title>
+</head>
+<body>
+    
+    <h1>The current date and time is:</h1>
+    <h1 id="clock">Loading...</h1>
+
+    <h1>Fireplace Status: {{ fire_status }}</h1>
+    <form method="POST" action="/">
+        <input type="submit" name="set_button" value="Fire On">
+        <input type="submit" name="unset_button" value="Fire Off">
+    </form>
+
+    <h1>Click the button to run the script</h1>
+
+    <!-- Form sends a POST request to the /run-script URL -->
+    <form method="POST" action="{{ url_for('run_script') }}">
+        <button type="submit">Run Python Script</button>
+    </form>
+
+    <script type="text/javascript">
+        function updateTime() {
+            // Fetch the time from the Flask endpoint
+            fetch("{{ url_for('get_time') }}")
+                .then(response => response.json())
+                .then(data => {
+                    // Update the HTML element with the current time
+                    document.getElementById("clock").innerText = data.time;
+                });
+        }
+
+        // Update the time immediately on page load
+        updateTime();
+        // Update the time every second (1000 milliseconds)
+        setInterval(updateTime, 1000);
+    </script>
+
+    <!-- Display a message if one is passed from the Flask app -->
+    {% if message %}
+        <p><strong>Status:</strong> {{ message }}</p>
+    {% endif %}
+
+</body>
+</html>

@@ -17,8 +17,6 @@ DEFAULT_ON_TIME = 1 * HOUR
 fire_on = False
 on_time = datetime.now()
 off_time = datetime.now()
-max_off_time = datetime.now()
-fireplace_obj = fireplace()
 
 # turn the fireplace off when we start the web app
 fireplace_obj.off()
@@ -27,7 +25,7 @@ producer, consumer = multiprocessing.Pipe()
 
 
 def fireplace_handler(connection):
-    
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():

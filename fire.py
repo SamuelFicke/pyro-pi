@@ -10,6 +10,8 @@ class fireplace:
         gpio.setmode(gpio.BCM)
         gpio.setup(IN1, gpio.OUT)
         gpio.setup(IN2, gpio.OUT)
+        gpio.output(IN1, False)
+        gpio.output(IN2, False)
 
     def on(self, time_seconds=0.2):
         gpio.output(IN1, True)

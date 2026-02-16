@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Control Python Script</title>
+<style>
+    body {
+	font-size: 200%;
+    }
+</style>
+</head>
+<body>
+
+    <h1>The current time is:</h1>
+    <h1 id="clock">12:00:00</h1>
+
+    <h1 id="status">The Fireplace is {{ fire_status }}</h1>
+    <form method="POST" action="/">
+        <input type="submit" name="set_button" value="Fire On", style="height:50px; width:200px; font-size:25px">
+        <input type="submit" name="unset_button" value="Fire Off", style="height:50px; width:200px; font-size:25px">
+	<input type="submit" name="add_hour" value="Add Hour", style="height:50px; width:200px; font-size:25px">
+	<input type="submit" name="subtract_hour" value="Subtract Hour", style="height:50px; width:200px; font-size:25px">
+    </form>
+ 
+    <!-- display time fire will turn off if it's on -->
+    {% if fire_status == "ON" %}
+      <h1 id="offtime">{{ fire_off_time }}</h1>
+    {% endif %}
+
+
+    <script type="text/javascript">
+        function updateTime() {
+            // Fetch the time from the Flask endpoint
+            fetch("{{ url_for('get_time') }}")
+                .then(response => response.json())
+                .then(data => {
+                    // Update the HTML element with the current time
+                    document.getElementById("offtime").innerText = data.fire_off_time;
+                    document.getElementById("status").innerText = data.fire_status_str;
+                    document.getElementById("clock").innerText = data.current_time;
+                });
+        }
+
+        // Update the time immediately on page load
+        updateTime();
+        // Update the time every second (1000 milliseconds)
+        setInterval(updateTime, 1000);
+    </script>
+
+    <!-- Display a message if one is passed from the Flask app -->
+    {% if message %}
+        <p><strong>Status:</strong> {{ message }}</p>
+    {% endif %}
+
+</body>
+</html>

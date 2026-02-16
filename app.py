@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from flask import Flask, render_template, request, redirect, url_for
 import subprocess
 from datetime import datetime, timedelta
@@ -5,7 +7,7 @@ from fire import fireplace
 
 HOUR = 60*60
 MAX_ON_TIME = 4 * HOUR
-DEFAULT_ON_TIME = 15
+DEFAULT_ON_TIME = 1 * HOUR
 
 # global variables
 fire_on = False

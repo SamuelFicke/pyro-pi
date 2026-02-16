@@ -4,6 +4,10 @@ from flask import Flask, render_template, request, redirect, url_for
 import subprocess
 from datetime import datetime, timedelta
 from fire import fireplace
+import multiprocessing
+
+
+app = Flask(__name__)
 
 HOUR = 60*60
 MAX_ON_TIME = 4 * HOUR
@@ -19,15 +23,11 @@ fireplace_obj = fireplace()
 # turn the fireplace off when we start the web app
 fireplace_obj.off()
 
-app = Flask(__name__)
+producer, consumer = multiprocessing.Pipe()
 
-# This function will be called when the button is clicked
-def my_script_function():
-    print("Python script function executed!")
-    # Add your script's logic here.
-    # For running a separate script file, you can use subprocess.call:
-    # subprocess.call(['/home/pi/flask/task.sh']) # Example from search results
-    return "Script executed successfully!"
+
+def fireplace_handler(connection):
+    
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -48,6 +48,7 @@ def index():
                 fire_on = True
                 off_time = datetime.now() + timedelta(seconds=DEFAULT_ON_TIME)
                 max_off_time = datetime.now() + timedelta(seconds=MAX_ON_TIME) 
+                producer.send("hello")
                 fireplace_obj.on()
         elif 'unset_button' in request.form:
             fire_on = False        

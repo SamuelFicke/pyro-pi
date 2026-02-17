@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 HOUR = 60*60
 MAX_ON_TIME = 4 * HOUR
-DEFAULT_ON_TIME = 15#1 * HOUR
+DEFAULT_ON_TIME = 1 * HOUR
 
 # global variables
 class fire_state:

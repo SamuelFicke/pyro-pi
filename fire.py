@@ -1,5 +1,11 @@
 from time import sleep
 
+debug = False
+
+if not debug:
+    import RPi.GPIO as gpio
+
+# pin definitions
 IN1 = 17
 IN2 = 22
 
@@ -8,7 +14,6 @@ class fireplace:
     def __init__(self, hardware=True):
         self.hardware = hardware
         if self.hardware:
-            import RPi.GPIO as gpio
             gpio.setmode(gpio.BCM)
             gpio.setup(IN1, gpio.OUT)
             gpio.setup(IN2, gpio.OUT)

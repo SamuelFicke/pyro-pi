@@ -1,0 +1,2 @@
+flask>=3,<4
+# RPi.GPIO is provided by the system (python3-rpi.gpio); not installed via pip.

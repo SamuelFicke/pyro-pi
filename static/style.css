@@ -1,0 +1,134 @@
+:root {
+  --bg: #140d08;
+  --bg2: #1e140c;
+  --card: #241910;
+  --line: #3a2a1b;
+  --text: #f4e9dc;
+  --dim: #b79b82;
+  --ember: #ff7a18;
+  --ember-2: #ffb347;
+  --off: #5b6573;
+  --danger: #e8532f;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: radial-gradient(120% 90% at 50% 0%, var(--bg2), var(--bg) 70%);
+  color: var(--text);
+  font-family: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: max(20px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom));
+  min-height: 100%;
+}
+
+.card {
+  width: 100%;
+  max-width: 440px;
+  background: linear-gradient(180deg, var(--card), #1c130b);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 26px 22px 20px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.5);
+  text-align: center;
+}
+
+.title {
+  margin: 0 0 6px;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  color: var(--dim);
+}
+
+/* ---- flame ---- */
+.flame {
+  position: relative;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 6px 0 10px;
+}
+.flame-svg { width: 120px; height: 150px; overflow: visible; }
+.f-outer, .f-inner { transform-origin: 50% 90%; transition: fill .4s ease; }
+.f-outer { fill: #3a2a1b; }
+.f-inner { fill: #2c1f13; }
+.flame-glow {
+  position: absolute;
+  width: 170px; height: 170px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,122,24,.0), rgba(255,122,24,0) 70%);
+  transition: background .5s ease;
+  pointer-events: none;
+}
+
+body.on .f-outer { fill: var(--ember); animation: flick 1.7s ease-in-out infinite; }
+body.on .f-inner { fill: var(--ember-2); animation: flick 1.3s ease-in-out infinite reverse; }
+body.on .flame-glow {
+  background: radial-gradient(circle, rgba(255,122,24,.38), rgba(255,122,24,0) 68%);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+@keyframes flick {
+  0%,100% { transform: scaleY(1) scaleX(1); }
+  25%     { transform: scaleY(1.06) scaleX(.97); }
+  50%     { transform: scaleY(.96) scaleX(1.03); }
+  75%     { transform: scaleY(1.03) scaleX(.98); }
+}
+@keyframes pulse { 0%,100% { opacity: .75; } 50% { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  body.on .f-outer, body.on .f-inner, body.on .flame-glow { animation: none; }
+}
+
+/* ---- status ---- */
+.status { min-height: 40px; margin-bottom: 18px; }
+.state { font-size: 30px; font-weight: 700; letter-spacing: .04em; }
+body.on .state { color: var(--ember-2); }
+body.off .state { color: var(--off); }
+.offline-note { color: var(--danger); font-size: 15px; margin-top: 4px; }
+
+/* ---- buttons ---- */
+.buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.btn {
+  font: inherit;
+  font-size: 19px;
+  font-weight: 600;
+  padding: 18px 0;
+  border-radius: 16px;
+  border: 2px solid transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition: filter .12s ease, transform .05s ease, opacity .2s ease;
+}
+.btn:active { transform: translateY(1px); }
+.btn-on { background: linear-gradient(180deg, #ff8a2b, #e8532f); color: #1a0e05; }
+.btn-off { background: #26211c; border-color: var(--line); color: var(--dim); }
+.btn:disabled { opacity: .45; cursor: default; }
+.btn.is-current { outline: 2px solid var(--ember-2); outline-offset: 2px; }
+
+/* ---- timer ---- */
+.timer {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.timer-label { color: var(--dim); font-size: 13px; text-transform: uppercase; letter-spacing: .08em; }
+.timer-time { font-size: 26px; font-weight: 600; margin: 4px 0 14px; color: var(--ember-2); }
+.timer-steps { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.step {
+  font: inherit; font-size: 16px; font-weight: 600;
+  padding: 14px 0; border-radius: 14px;
+  background: #26211c; border: 1px solid var(--line); color: var(--text);
+  cursor: pointer;
+}
+.step:active { transform: translateY(1px); }
+.step:disabled { opacity: .4; cursor: default; }
+.timer-hint { margin-top: 10px; min-height: 16px; font-size: 13px; color: var(--dim); }
+
+/* ---- footer ---- */
+.foot { margin-top: 18px; color: var(--dim); font-size: 14px; font-variant-numeric: tabular-nums; }
+
+body.loading .buttons, body.loading .flame { opacity: .5; }

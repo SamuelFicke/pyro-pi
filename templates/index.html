@@ -1,53 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Control Python Script</title>
-<style>
-    body {
-	font-size: 200%;
-    }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#140d08">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Fireplace">
+  <title>Fireplace</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body class="loading">
+  <main class="card">
+    <h1 class="title">Front Room Fireplace</h1>
 
-    <h1>The current time is:</h1>
-    <h1 id="clock">12:00:00</h1>
+    <div class="flame" aria-hidden="true">
+      <div class="flame-glow"></div>
+      <svg viewBox="0 0 64 80" class="flame-svg">
+        <path class="f-outer" d="M32 2 C44 20 58 30 50 52 C46 66 38 72 32 78 C26 72 18 66 14 52 C6 30 20 20 32 2 Z"/>
+        <path class="f-inner" d="M32 26 C40 36 44 44 40 56 C37 64 34 68 32 72 C30 68 27 64 24 56 C20 44 24 36 32 26 Z"/>
+      </svg>
+    </div>
 
-    <h1 id="status">The Fireplace is {{ fire_status }}</h1>
-    <form method="POST" action="/">
-        <input type="submit" name="set_button" value="Fire On", style="height:50px; width:200px; font-size:25px">
-        <input type="submit" name="unset_button" value="Fire Off", style="height:50px; width:200px; font-size:25px">
-	<input type="submit" name="add_hour" value="Add Hour", style="height:50px; width:200px; font-size:25px">
-	<input type="submit" name="subtract_hour" value="Subtract Hour", style="height:50px; width:200px; font-size:25px">
-    </form>
- 
-    <!-- display time fire will turn off if it's on -->
-    <h1 id="offtime">{{ fire_off_time }}</h1>
+    <div class="status">
+      <div class="state" id="state">—</div>
+      <div class="offline-note" id="offline-note" hidden>Can't reach the fireplace</div>
+    </div>
 
+    <div class="buttons">
+      <button id="btn-on" class="btn btn-on">Turn On</button>
+      <button id="btn-off" class="btn btn-off">Turn Off</button>
+    </div>
 
-    <script type="text/javascript">
-        function updateTime() {
-            // Fetch the time from the Flask endpoint
-            fetch("{{ url_for('get_time') }}")
-                .then(response => response.json())
-                .then(data => {
-                    // Update the HTML element with the current time
-                    document.getElementById("offtime").innerText = data.fire_off_time;
-                    document.getElementById("status").innerText = data.fire_status_str;
-                    document.getElementById("clock").innerText = data.current_time;
-                });
-        }
+    <section class="timer" id="timer" hidden>
+      <div class="timer-label">Turns off at</div>
+      <div class="timer-time" id="off-time">—</div>
+      <div class="timer-steps">
+        <button class="step" id="minus" aria-label="one hour sooner">− 1 hour</button>
+        <button class="step" id="plus" aria-label="one hour later">+ 1 hour</button>
+      </div>
+      <div class="timer-hint" id="ceiling-hint"></div>
+    </section>
 
-        // Update the time immediately on page load
-        updateTime();
-        // Update the time every second (1000 milliseconds)
-        setInterval(updateTime, 1000);
-    </script>
+    <footer class="foot">
+      <span id="clock">—</span>
+    </footer>
+  </main>
 
-    <!-- Display a message if one is passed from the Flask app -->
-    {% if message %}
-        <p><strong>Status:</strong> {{ message }}</p>
-    {% endif %}
-
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>

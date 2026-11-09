@@ -115,18 +115,33 @@ body.off .state { color: var(--off); }
   padding-top: 18px;
   border-top: 1px solid var(--line);
 }
-.timer-label { color: var(--dim); font-size: 13px; text-transform: uppercase; letter-spacing: .08em; }
-.timer-time { font-size: 26px; font-weight: 600; margin: 4px 0 14px; color: var(--ember-2); }
-.timer-steps { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.step {
-  font: inherit; font-size: 16px; font-weight: 600;
-  padding: 14px 0; border-radius: 14px;
-  background: #26211c; border: 1px solid var(--line); color: var(--text);
-  cursor: pointer;
+.timer-label { color: var(--dim); font-size: 13px; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+
+/* iOS-style scrolling time picker */
+.wheel { --item-h: 44px; position: relative; height: calc(var(--item-h) * 5); overflow: hidden; }
+.wheel-list {
+  list-style: none; margin: 0; height: 100%;
+  padding: calc(var(--item-h) * 2) 0;     /* lets first/last item reach the centre */
+  overflow-y: scroll; scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch; scrollbar-width: none; text-align: center;
+  overscroll-behavior: contain;
 }
-.step:active { transform: translateY(1px); }
-.step:disabled { opacity: .4; cursor: default; }
-.timer-hint { margin-top: 10px; min-height: 16px; font-size: 13px; color: var(--dim); }
+.wheel-list::-webkit-scrollbar { display: none; }
+.wheel-item {
+  height: var(--item-h); line-height: var(--item-h); scroll-snap-align: center;
+  font-size: 22px; font-variant-numeric: tabular-nums; color: var(--dim);
+  transition: color .15s ease, transform .15s ease, opacity .15s ease;
+}
+.wheel-item.sel { color: var(--ember-2); font-weight: 700; font-size: 25px; }
+.wheel-center {
+  position: absolute; left: 10%; right: 10%; top: calc(var(--item-h) * 2); height: var(--item-h);
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  pointer-events: none;
+}
+.wheel-fade { position: absolute; left: 0; right: 0; height: calc(var(--item-h) * 2); pointer-events: none; }
+.wheel-fade-top { top: 0; background: linear-gradient(var(--card), rgba(36,25,16,0)); }
+.wheel-fade-bottom { bottom: 0; background: linear-gradient(rgba(36,25,16,0), #1c130b); }
+.timer-hint { margin-top: 8px; min-height: 16px; font-size: 13px; color: var(--dim); }
 
 /* ---- footer ---- */
 .foot { margin-top: 18px; color: var(--dim); font-size: 14px; font-variant-numeric: tabular-nums; }

@@ -70,7 +70,15 @@ st, b = req("/get_time"); j = json.loads(b)
 check("after form off -> OFF", "OFF" in j["fire_status_str"] and j["fire_off_time"] == "")
 
 st, b = req("/", "POST", form="set_button=Fire+On"); check("compat form on (<400)", st < 400)
-st, b = req("/api/status"); check("after form on -> on", json.loads(b)["on"] is True)
+st, b = req("/api/status"); j = json.loads(b); check("after form on -> on", j["on"] is True)
+
+# absolute off-time picker
+target = (j["now_epoch"] // 60 + 30) * 60  # 30 whole minutes from now
+st, b = req("/api/off_time", "POST", body={"at_epoch": target}); j2 = json.loads(b)
+check("off_time sets ~30m", st == 200 and abs(j2["off_epoch"] - target) <= 60)
+st, b = req("/api/off_time", "POST", body={"at_epoch": j["now_epoch"] + 99 * 3600}); j3 = json.loads(b)
+check("off_time clamps to ceiling", 0 < j3["off_epoch"] <= j3["ceiling_epoch"])
+st, b = req("/api/off_time", "POST", body={}); check("off_time missing arg 400", st == 400)
 req("/api/off", "POST")
 
 print("ALL PASS" if ok else "SOME FAILED")

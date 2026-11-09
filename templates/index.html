@@ -32,11 +32,12 @@
     </div>
 
     <section class="timer" id="timer" hidden>
-      <div class="timer-label">Turns off at</div>
-      <div class="timer-time" id="off-time">—</div>
-      <div class="timer-steps">
-        <button class="step" id="minus" aria-label="one hour sooner">− 1 hour</button>
-        <button class="step" id="plus" aria-label="one hour later">+ 1 hour</button>
+      <div class="timer-label">Turn off at</div>
+      <div class="wheel" id="wheel">
+        <ul class="wheel-list" id="wheel-list"></ul>
+        <div class="wheel-center" aria-hidden="true"></div>
+        <div class="wheel-fade wheel-fade-top" aria-hidden="true"></div>
+        <div class="wheel-fade wheel-fade-bottom" aria-hidden="true"></div>
       </div>
       <div class="timer-hint" id="ceiling-hint"></div>
     </section>

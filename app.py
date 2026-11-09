@@ -62,6 +62,16 @@ def api_off():
     return jsonify(controller.turn_off())
 
 
+@app.post("/api/off_time")
+def api_off_time():
+    data = request.get_json(silent=True) or {}
+    try:
+        at_epoch = int(data["at_epoch"])
+    except (KeyError, TypeError, ValueError):
+        return jsonify({"error": "at_epoch (unix seconds) required"}), 400
+    return jsonify(controller.set_off_at(at_epoch))
+
+
 @app.post("/api/adjust")
 def api_adjust():
     data = request.get_json(silent=True) or {}

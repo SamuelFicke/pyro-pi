@@ -71,6 +71,28 @@ class Controller:
             self._set_off()
             return self.status()
 
+    def set_off_at(self, epoch: int) -> dict:
+        """Set an absolute shut-off time (unix seconds), rounded to the minute
+        and clamped to the window (now, ceiling]. No-op when the fire is off."""
+        with self._lock:
+            if not self.on or self.off_at is None or self.ceiling_at is None:
+                return self.status()
+            try:
+                target = datetime.fromtimestamp(int(epoch))
+            except (TypeError, ValueError, OSError, OverflowError):
+                return self.status()
+            target = target.replace(second=0, microsecond=0)
+            now = datetime.now().replace(second=0, microsecond=0)
+            ceiling = self.ceiling_at.replace(second=0, microsecond=0)
+            earliest = now + timedelta(minutes=1)
+            if target > ceiling:
+                target = ceiling
+            if target < earliest:
+                target = min(earliest, ceiling)
+            self.off_at = target
+            log.info("off time set to %s", target.strftime(_TIME_FMT))
+            return self.status()
+
     def adjust(self, hours: int) -> dict:
         with self._lock:
             if self.on and self.off_at is not None:
@@ -108,9 +130,12 @@ class Controller:
             return {
                 "on": self.on,
                 "now": now.strftime(_TIME_FMT),
+                "now_epoch": int(now.timestamp()),
                 "off_at": self.off_at.strftime(_TIME_FMT) if self.on and self.off_at else "",
                 "off_in_seconds": remaining,
+                "off_epoch": int(self.off_at.timestamp()) if self.on and self.off_at else 0,
                 "ceiling_at": self.ceiling_at.strftime(_TIME_FMT) if self.on and self.ceiling_at else "",
+                "ceiling_epoch": int(self.ceiling_at.timestamp()) if self.on and self.ceiling_at else 0,
             }
 
     def shutdown(self) -> None:

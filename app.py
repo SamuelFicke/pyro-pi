@@ -64,12 +64,20 @@ def api_off():
 
 @app.post("/api/off_time")
 def api_off_time():
+    """Set the shut-off time. Accepts either {"in_minutes": N} (minutes from now)
+    or {"at_epoch": unix_seconds}."""
     data = request.get_json(silent=True) or {}
-    try:
-        at_epoch = int(data["at_epoch"])
-    except (KeyError, TypeError, ValueError):
-        return jsonify({"error": "at_epoch (unix seconds) required"}), 400
-    return jsonify(controller.set_off_at(at_epoch))
+    if "in_minutes" in data:
+        try:
+            return jsonify(controller.set_off_in(int(data["in_minutes"])))
+        except (TypeError, ValueError):
+            return jsonify({"error": "in_minutes must be an integer"}), 400
+    if "at_epoch" in data:
+        try:
+            return jsonify(controller.set_off_at(int(data["at_epoch"])))
+        except (TypeError, ValueError):
+            return jsonify({"error": "at_epoch must be an integer"}), 400
+    return jsonify({"error": "in_minutes or at_epoch required"}), 400
 
 
 @app.post("/api/adjust")

@@ -78,6 +78,10 @@ st, b = req("/api/off_time", "POST", body={"at_epoch": target}); j2 = json.loads
 check("off_time sets ~30m", st == 200 and abs(j2["off_epoch"] - target) <= 60)
 st, b = req("/api/off_time", "POST", body={"at_epoch": j["now_epoch"] + 99 * 3600}); j3 = json.loads(b)
 check("off_time clamps to ceiling", 0 < j3["off_epoch"] <= j3["ceiling_epoch"])
+st, b = req("/api/off_time", "POST", body={"in_minutes": 90}); j = json.loads(b)
+check("off_time in_minutes ~90", 85 <= round((j["off_epoch"] - j["now_epoch"]) / 60) <= 95)
+st, b = req("/api/off_time", "POST", body={"in_minutes": 9999}); j = json.loads(b)
+check("off_time in_minutes clamps to ceiling", 0 < j["off_epoch"] <= j["ceiling_epoch"])
 st, b = req("/api/off_time", "POST", body={}); check("off_time missing arg 400", st == 400)
 req("/api/off", "POST")
 

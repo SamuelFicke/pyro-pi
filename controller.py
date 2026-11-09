@@ -35,7 +35,8 @@ def _minutes(env_name: str, default_minutes: int) -> int:
 DEFAULT_ON = timedelta(minutes=_minutes("FIRE_DEFAULT_MINUTES", 60))
 MAX_ON = timedelta(minutes=_minutes("FIRE_MAX_MINUTES", 240))
 _TICK_SECONDS = 2
-_TIME_FMT = "%I:%M:%S %p"
+_TIME_FMT = "%I:%M:%S %p"       # live clock (with seconds)
+_TIME_FMT_MIN = "%I:%M %p"      # off / ceiling times (whole minutes)
 
 
 class Controller:
@@ -57,7 +58,7 @@ class Controller:
     def turn_on(self) -> dict:
         with self._lock:
             if not self.on:
-                now = datetime.now()
+                now = datetime.now().replace(second=0, microsecond=0)
                 self.on = True
                 self.off_at = now + DEFAULT_ON
                 self.ceiling_at = now + MAX_ON
@@ -91,6 +92,25 @@ class Controller:
                 target = min(earliest, ceiling)
             self.off_at = target
             log.info("off time set to %s", target.strftime(_TIME_FMT))
+            return self.status()
+
+    def set_off_in(self, minutes: int) -> dict:
+        """Set the shut-off to `minutes` from now (whole minutes), clamped to the
+        ceiling. No-op when the fire is off."""
+        with self._lock:
+            if not self.on or self.ceiling_at is None:
+                return self.status()
+            try:
+                minutes = max(1, int(minutes))
+            except (TypeError, ValueError):
+                return self.status()
+            now = datetime.now().replace(second=0, microsecond=0)
+            target = now + timedelta(minutes=minutes)
+            ceiling = self.ceiling_at.replace(second=0, microsecond=0)
+            if target > ceiling:
+                target = ceiling
+            self.off_at = target
+            log.info("off time set to %s (in %d min)", target.strftime(_TIME_FMT), minutes)
             return self.status()
 
     def adjust(self, hours: int) -> dict:
@@ -131,10 +151,10 @@ class Controller:
                 "on": self.on,
                 "now": now.strftime(_TIME_FMT),
                 "now_epoch": int(now.timestamp()),
-                "off_at": self.off_at.strftime(_TIME_FMT) if self.on and self.off_at else "",
+                "off_at": self.off_at.strftime(_TIME_FMT_MIN) if self.on and self.off_at else "",
                 "off_in_seconds": remaining,
                 "off_epoch": int(self.off_at.timestamp()) if self.on and self.off_at else 0,
-                "ceiling_at": self.ceiling_at.strftime(_TIME_FMT) if self.on and self.ceiling_at else "",
+                "ceiling_at": self.ceiling_at.strftime(_TIME_FMT_MIN) if self.on and self.ceiling_at else "",
                 "ceiling_epoch": int(self.ceiling_at.timestamp()) if self.on and self.ceiling_at else 0,
             }
 

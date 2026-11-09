@@ -32,13 +32,21 @@
     </div>
 
     <section class="timer" id="timer" hidden>
-      <div class="timer-label">Turn off at</div>
-      <div class="wheel" id="wheel">
-        <ul class="wheel-list" id="wheel-list"></ul>
-        <div class="wheel-center" aria-hidden="true"></div>
-        <div class="wheel-fade wheel-fade-top" aria-hidden="true"></div>
-        <div class="wheel-fade wheel-fade-bottom" aria-hidden="true"></div>
+      <div class="timer-label">Turn off in</div>
+      <div class="wheels">
+        <div class="col">
+          <div class="col-head">hours</div>
+          <div class="wheel"><ul class="wheel-list" id="list-h"></ul></div>
+        </div>
+        <div class="col">
+          <div class="col-head">minutes</div>
+          <div class="wheel"><ul class="wheel-list" id="list-m"></ul></div>
+        </div>
+        <div class="wheels-center" aria-hidden="true"></div>
+        <div class="wheels-fade top" aria-hidden="true"></div>
+        <div class="wheels-fade bottom" aria-hidden="true"></div>
       </div>
+      <div class="timer-off" id="timer-off">—</div>
       <div class="timer-hint" id="ceiling-hint"></div>
     </section>
 

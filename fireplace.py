@@ -19,7 +19,8 @@ log = logging.getLogger("pyro.fireplace")
 # BCM pin numbers of the relay inputs.
 PIN_ON = 17   # pulse high to light the fire
 PIN_OFF = 22  # pulse high to extinguish the fire
-PULSE_SECONDS = 0.2
+PULSE_SECONDS = 0.2      # off pulse
+ON_PULSE_SECONDS = 0.5   # on pulse: lengthened 2026-11-26, 0.2s was ignored on the first try after the fire sat idle
 
 
 class Fireplace:
@@ -59,7 +60,7 @@ class Fireplace:
         other = PIN_OFF if active_pin == PIN_ON else PIN_ON
         self._gpio.output(active_pin, True)
         self._gpio.output(other, False)
-        sleep(PULSE_SECONDS)
+        sleep(ON_PULSE_SECONDS if active_pin == PIN_ON else PULSE_SECONDS)
         self._all_low()
 
     def _all_low(self) -> None:

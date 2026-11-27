@@ -47,6 +47,7 @@ class Controller:
         self.on = False
         self.off_at: datetime | None = None
         self.ceiling_at: datetime | None = None
+        self._shut_down = False
 
         # Known-safe starting point.
         self._fire.off()
@@ -162,5 +163,10 @@ class Controller:
         """Stop the watchdog and leave the fire off. Safe to call repeatedly."""
         self._stop.set()
         with self._lock:
+            # app.py reaches this from both main()'s finally and atexit; only the
+            # first call may pulse, since cleanup() releases the GPIO pins.
+            if self._shut_down:
+                return
+            self._shut_down = True
             self._set_off()
             self._fire.cleanup()

@@ -57,6 +57,9 @@ class Fireplace:
     def _pulse(self, active_pin: int) -> None:
         if not self.hardware:
             return
+        if self._gpio is None:
+            log.warning("pulse on pin %d ignored: GPIO already cleaned up", active_pin)
+            return
         other = PIN_OFF if active_pin == PIN_ON else PIN_ON
         self._gpio.output(active_pin, True)
         self._gpio.output(other, False)
